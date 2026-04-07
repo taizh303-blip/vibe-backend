@@ -128,7 +128,6 @@ async def analyze(file: UploadFile = File(...)):
     except Exception as e:
         print("❌ CRASH:", e)
         return {"error": str(e)}
-    }
 
 # -----------------------------
 # Endpoint: test server
