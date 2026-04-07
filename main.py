@@ -95,30 +95,39 @@ def search_playlists(query):
 # -----------------------------
 @app.post("/analyze")
 async def analyze(file: UploadFile = File(...)):
-    print("Received file:", file.filename)
+    try:
+        print("🔥 Analyze endpoint hit")
 
-    with tempfile.NamedTemporaryFile(delete=False) as tmp:
-        contents = await file.read()
-        tmp.write(contents)
-        tmp_path = tmp.name
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            contents = await file.read()
+            tmp.write(contents)
+            tmp_path = tmp.name
 
-    tempo = get_tempo(tmp_path)  
-    print("Tempo:", tempo)
+        try:
+            tempo = get_tempo(tmp_path)
+        except Exception as e:
+            print("Tempo error:", e)
+            tempo = 100  # fallback
 
-    query = map_tempo_to_query(tempo)
-    print("Query:", query)
+        query = map_tempo_to_query(tempo)
 
-    playlists = search_playlists(query)
-    print("Playlists:", playlists)
+        try:
+            playlists = search_playlists(query)
+        except Exception as e:
+            print("Spotify error:", e)
+            playlists = []
 
-    # ✅ ADD THIS RIGHT HERE
-    if playlists is None:
-        playlists = []
+        print("✅ Returning response")
 
-    return {
-        "tempo": tempo,
-        "query": query,
-        "playlists": playlists
+        return {
+            "tempo": tempo,
+            "query": query,
+            "playlists": playlists
+        }
+
+    except Exception as e:
+        print("❌ CRASH:", e)
+        return {"error": str(e)}
     }
 
 # -----------------------------
