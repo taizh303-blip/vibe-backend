@@ -5,14 +5,18 @@ import tempfile
 import requests
 import base64
 
-# -----------------------------
-# Create FastAPI app
-# -----------------------------
+# -----------------------
+# Create the FastAPI app
+# -----------------------
 app = FastAPI()
 
+# -----------------------
+# Step 1: CORS middleware
+# This goes immediately after creating the app
+# -----------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # allows all origins, including Framer Desktop
+    allow_origins=["*"],       # allow all domains for now
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -96,8 +100,6 @@ def search_playlists(query):
 @app.post("/analyze")
 async def analyze(file: UploadFile = File(...)):
     try:
-        print("🔥 Analyze endpoint hit")
-
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
             contents = await file.read()
             tmp.write(contents)
@@ -117,13 +119,7 @@ async def analyze(file: UploadFile = File(...)):
             print("Spotify error:", e)
             playlists = []
 
-        print("✅ Returning response")
-
-        return {
-            "tempo": tempo,
-            "query": query,
-            "playlists": playlists
-        }
+        return {"tempo": tempo, "query": query, "playlists": playlists}
 
     except Exception as e:
         print("❌ CRASH:", e)
