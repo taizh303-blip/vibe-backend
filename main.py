@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 import librosa
 import tempfile
 import requests
@@ -8,7 +9,6 @@ import base64
 # Create FastAPI app
 # -----------------------------
 app = FastAPI()
-from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
