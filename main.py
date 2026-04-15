@@ -80,7 +80,7 @@ def map_tempo_to_queries(tempo):
         return ["indie pop", "bedroom pop", "alt r&b", "chill vibes"]
 
     elif tempo < 120:
-        return ["pop hits", "dance pop", "indie rock", "feel good music"]
+        return ["pop hits", "dance pop", "indie rock", "feel good music", "hip-hop"]
 
     elif tempo < 140:
         return ["house music", "electronic dance", "party songs", "club hits"]
