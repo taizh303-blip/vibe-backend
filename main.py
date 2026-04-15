@@ -55,42 +55,51 @@ def get_tempo(file_path):
 
     return float(tempo)
 
-def map_tempo_to_query(tempo):
-    if tempo < 90:
-        return "chill ambient"
+def map_tempo_to_queries(tempo):
+    if tempo < 80:
+        return ["ambient chill", "lofi beats", "sad indie", "sleep music"]
+
+    elif tempo < 100:
+        return ["indie pop", "bedroom pop", "alt r&b", "chill vibes"]
+
     elif tempo < 120:
-        return "indie pop"
+        return ["pop hits", "dance pop", "indie rock", "feel good music"]
+
+    elif tempo < 140:
+        return ["house music", "electronic dance", "party songs", "club hits"]
+
     else:
-        return "workout hype"
+        return ["workout hype", "trap", "edm festival", "gym motivation"]
 
 # -----------------------------
 # Helper function: search Spotify playlists
 # -----------------------------
-def search_playlists(query):
+def search_playlists(queries):
     token = get_spotify_token()
-
-    # ✅ ADD THIS CHECK RIGHT HERE
     if not token:
-        print("❌ Failed to get Spotify token")
         return []
 
     url = "https://api.spotify.com/v1/search"
     headers = {"Authorization": f"Bearer {token}"}
-    params = {"q": query, "type": "playlist", "limit": 5}
-
-    res = requests.get(url, headers=headers, params=params)
-    print("Spotify status:", res.status_code)
-    data = res.json()
-    print("Spotify response:", data)
 
     playlists = []
 
-    for item in data.get("playlists", {}).get("items", []):
-        if item and item.get("external_urls"):
-            playlists.append({
-                "name": item.get("name", "Unknown"),
-                "url": item["external_urls"].get("spotify", "#")
-            })
+    for query in queries:
+        params = {"q": query, "type": "playlist", "limit": 2}
+
+        try:
+            res = requests.get(url, headers=headers, params=params)
+            data = res.json()
+
+            for item in data.get("playlists", {}).get("items", []):
+                if item and item.get("external_urls"):
+                    playlists.append({
+                        "name": item.get("name"),
+                        "url": item["external_urls"].get("spotify")
+                    })
+
+        except Exception as e:
+            print("Spotify error:", e)
 
     return playlists
 
@@ -111,15 +120,15 @@ async def analyze(file: UploadFile = File(...)):
             print("Tempo error:", e)
             tempo = 100  # fallback
 
-        query = map_tempo_to_query(tempo)
+        queries = map_tempo_to_queries(tempo)
 
         try:
-            playlists = search_playlists(query)
+            playlists = search_playlists(queries)
         except Exception as e:
             print("Spotify error:", e)
             playlists = []
 
-        return {"tempo": tempo, "query": query, "playlists": playlists}
+        return {"tempo": tempo, "query": query, "playlists": [10] playlists}
 
     except Exception as e:
         print("❌ CRASH:", e)
