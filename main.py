@@ -128,7 +128,7 @@ async def analyze(file: UploadFile = File(...)):
             print("Spotify error:", e)
             playlists = []
 
-        return {"tempo": tempo, "query": query, "playlists": [10] playlists}
+        return {"tempo": tempo, "query": query, "playlists": playlists}
 
     except Exception as e:
         print("❌ CRASH:", e)
