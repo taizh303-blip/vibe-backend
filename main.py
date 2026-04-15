@@ -32,15 +32,30 @@ SPOTIFY_CLIENT_SECRET = "e39a9079abca453b9223074222c8c34f"
 # Helper function: get Spotify token automatically
 # -----------------------------
 def get_spotify_token():
-    auth_url = "https://accounts.spotify.com/api/token"
-    auth_header = base64.b64encode(f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}".encode()).decode()
-    headers = {"Authorization": f"Basic {auth_header}"}
-    data = {"grant_type": "client_credentials"}
+    try:
+        auth_string = f"{CLIENT_ID}:{CLIENT_SECRET}"
+        auth_bytes = auth_string.encode("utf-8")
+        auth_base64 = base64.b64encode(auth_bytes).decode("utf-8")
 
-    res = requests.post(auth_url, headers=headers, data=data)
-    res.raise_for_status()  # will raise an error if request fails
-    token = res.json()["access_token"]
-    return token
+        url = "https://accounts.spotify.com/api/token"
+        headers = {
+            "Authorization": f"Basic {auth_base64}",
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+
+        data = {"grant_type": "client_credentials"}
+
+        res = requests.post(url, headers=headers, data=data)
+
+        token = res.json().get("access_token")
+
+        print("Spotify token:", token)
+
+        return token
+
+    except Exception as e:
+        print("Token error:", e)
+        return None
 
 # -----------------------------
 # Helper function: tempo analysis
@@ -109,29 +124,31 @@ def search_playlists(queries):
 @app.post("/analyze")
 async def analyze(file: UploadFile = File(...)):
     try:
+        print("🔥 endpoint hit")
+
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
             contents = await file.read()
             tmp.write(contents)
             tmp_path = tmp.name
 
-        try:
-            tempo = get_tempo(tmp_path)
-        except Exception as e:
-            print("Tempo error:", e)
-            tempo = 100  # fallback
-
+        tempo = get_tempo(tmp_path)
         queries = map_tempo_to_queries(tempo)
 
-        try:
-            playlists = search_playlists(queries)
-        except Exception as e:
-            print("Spotify error:", e)
-            playlists = []
+        token = get_spotify_token()
 
-        return {"tempo": tempo, "query": query, "playlists": playlists}
+        if not token:
+            return {"error": "Spotify token failed"}
+
+        playlists = search_playlists(queries)
+
+        return {
+            "tempo": tempo,
+            "queries": queries,
+            "playlists": playlists
+        }
 
     except Exception as e:
-        print("❌ CRASH:", e)
+        print("❌ ERROR:", e)
         return {"error": str(e)}
 
 # -----------------------------
