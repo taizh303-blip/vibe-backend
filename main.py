@@ -5,6 +5,8 @@ import tempfile
 import requests
 import base64
 
+CLIENT_ID = "fd55177b6eef479fa575364afa999ee7"
+CLIENT_SECRET = "e39a9079abca453b9223074222c8c34f"
 # -----------------------
 # Create the FastAPI app
 # -----------------------
