@@ -124,31 +124,38 @@ def search_playlists(queries):
 @app.post("/analyze")
 async def analyze(file: UploadFile = File(...)):
     try:
-        print("🔥 endpoint hit")
+        print("🔥 REQUEST RECEIVED")
 
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
             contents = await file.read()
             tmp.write(contents)
             tmp_path = tmp.name
 
+        print("📁 File saved")
+
         tempo = get_tempo(tmp_path)
+        print("🎵 Tempo:", tempo)
+
         queries = map_tempo_to_queries(tempo)
+        print("🔎 Queries:", queries)
 
         token = get_spotify_token()
-
-        if not token:
-            return {"error": "Spotify token failed"}
+        print("🔑 Token:", token)
 
         playlists = search_playlists(queries)
+        print("🎧 Playlists:", playlists)
 
-        return {
+        response = {
             "tempo": tempo,
             "queries": queries,
             "playlists": playlists
         }
 
+        print("✅ RESPONSE READY:", response)
+        return response
+
     except Exception as e:
-        print("❌ ERROR:", e)
+        print("❌ BACKEND CRASH:", e)
         return {"error": str(e)}
 
 # -----------------------------
