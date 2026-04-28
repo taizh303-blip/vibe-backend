@@ -74,19 +74,44 @@ def get_tempo(file_path):
 
 def map_tempo_to_queries(tempo):
     if tempo < 80:
-        return ["ambient chill", "lofi beats", "sad indie", "sleep music"]
+        return [
+            "lofi beats",
+            "chill beats",
+            "study beats",
+            "ambient music"
+        ]
 
     elif tempo < 105:
-        return ["indie pop", "bedroom pop", "alt r&b", "chill vibes"]
+        return [
+            "indie pop",
+            "chill pop",
+            "bedroom pop",
+            "alternative r&b"
+        ]
 
     elif tempo < 120:
-        return ["pop hits", "dance pop", "indie rock", "feel good music", "hip-hop"]
+        return [
+            "pop hits",
+            "feel good pop",
+            "dance pop",
+            "top hits"
+        ]
 
     elif tempo < 140:
-        return ["house music", "electronic dance", "party songs", "club hits"]
+        return [
+            "house music",
+            "dance hits",
+            "party songs",
+            "electronic dance music"
+        ]
 
     else:
-        return ["workout hype", "trap", "edm festival", "gym motivation"]
+        return [
+            "workout music",
+            "gym playlist",
+            "hip hop hits",
+            "edm hits"
+        ]
 
 # -----------------------------
 # Helper function: search Spotify playlists
