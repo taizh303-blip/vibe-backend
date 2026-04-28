@@ -128,7 +128,7 @@ def search_playlists(queries):
 
     for query in queries:
         print("Searching:", query) 
-        params = {"q": query, "type": "playlist", "limit": 2}
+        params = {"q": query, "type": "playlist", "limit": 5}
 
         try:
             res = requests.get(url, headers=headers, params=params)
