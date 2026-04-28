@@ -102,6 +102,7 @@ def search_playlists(queries):
     playlists = []
 
     for query in queries:
+        print("Searching:", query) 
         params = {"q": query, "type": "playlist", "limit": 2}
 
         try:
